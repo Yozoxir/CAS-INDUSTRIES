@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAS'INDUSTRIES</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --accent: #ff3c00;
+    --text: #f0f0f0;
+    --muted: #555;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    left: -20%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(circle, rgba(255,60,0,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { width: 100%; max-width: 620px; position: relative; z-index: 1; }
+
+  .header { margin-bottom: 2.5rem; text-align: center; }
+
+  .brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    color: var(--text);
+  }
+  .brand span { color: var(--accent); }
+
+  .honesty-banner {
+    margin-top: 1.5rem;
+    border: 1px solid var(--accent);
+    padding: 0.8rem 1.2rem;
+    font-size: 0.82rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    background: rgba(255,60,0,0.04);
+  }
+  .honesty-banner::before { content: '⚠  '; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); padding: 2rem; }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.35s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+
+  .question {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.3rem, 4vw, 1.85rem);
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+    margin-bottom: 1.6rem;
+    color: var(--text);
+  }
+
+  .options { display: flex; flex-direction: column; gap: 0.7rem; }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-size: 0.88rem;
+    user-select: none;
+  }
+  .opt:hover { border-color: var(--muted); background: rgba(255,255,255,0.02); }
+  .opt.selected { border-color: var(--accent); background: rgba(255,60,0,0.06); }
+
+  .opt-dot {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--muted);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .opt.selected .opt-dot { border-color: var(--accent); background: var(--accent); }
+
+  /* input age */
+  .age-input-wrap { margin-top: 1rem; display: none; }
+  .age-input-wrap.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  .age-input {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.75rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 140px;
+    text-align: center;
+  }
+  .age-input:focus { border-color: var(--accent); }
+  .age-input::placeholder { color: #333; }
+  .age-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .free-text {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.9rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .free-text:focus { border-color: var(--accent); }
+  .free-text::placeholder { color: #333; }
+  .free-hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; }
+
+  .fields { display: flex; flex-direction: column; gap: 1rem; }
+  .field-group { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field-group label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .field-group input {
+    background: #0e0e0e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.75rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .field-group input:focus { border-color: var(--accent); }
+  .field-group input::placeholder { color: #333; }
+
+  .btn {
+    margin-top: 1.6rem;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.12em;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:hover { background: #e03500; }
+  .btn:active { transform: scale(0.99); }
+  .btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .progress-wrap { margin-bottom: 1.5rem; height: 2px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+  #confirm { display: none; text-align: center; padding: 2rem 0 1rem; }
+  .confirm-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+  .confirm-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.8rem;
+  }
+  .confirm-line { width: 40px; height: 2px; background: var(--accent); margin: 1.2rem auto; }
+  .confirm-msg { font-size: 0.88rem; color: var(--muted); line-height: 1.7; max-width: 400px; margin: 0 auto; }
+
+  .error-msg { color: var(--accent); font-size: 0.78rem; margin-top: 0.4rem; display: none; }
+
+  @media (max-width: 480px) { .card { padding: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="brand">CAS<span>'</span>INDUSTRIES</div>
+    <div class="honesty-banner">
+      Sois honnête dans tes réponses. Ce formulaire est là pour identifier les meilleurs profils — une réponse fausse te ferait seulement perdre ta place.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <!-- Q1 — Majeur + âge si mineur -->
+    <div class="step active" id="step1">
+      <div class="step-label">Question 1 / 9</div>
+      <div class="question">Tu es majeur(e) ?</div>
+      <div class="options">
+        <div class="opt" data-q="1" data-v="oui" data-score="1" onclick="selectOpt(this); hideAge()">
+          <div class="opt-dot"></div>Oui, j'ai 18 ans ou plus
+        </div>
+        <div class="opt" data-q="1" data-v="non" data-score="0" onclick="selectOpt(this); showAge()">
+          <div class="opt-dot"></div>Non, je suis mineur(e)
+        </div>
+      </div>
+      <div class="age-input-wrap" id="ageWrap">
+        <div class="age-label">Ton âge exact</div>
+        <input type="number" class="age-input" id="ageInput" min="10" max="17" placeholder="ex : 16" />
+      </div>
+      <button class="btn" onclick="nextStep(1)" id="btn1" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q2 — Compte TikTok -->
+    <div class="step" id="step2">
+      <div class="step-label">Question 2 / 9</div>
+      <div class="question">Tu as un compte TikTok actif ?</div>
+      <div class="options">
+        <div class="opt" data-q="2" data-v="oui_1000" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Oui, avec 1 000 abonnés ou plus
+        </div>
+        <div class="opt" data-q="2" data-v="oui_moins" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Oui, mais moins de 1 000 abonnés
+        </div>
+        <div class="opt" data-q="2" data-v="non" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Non, pas de compte TikTok
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(2)" id="btn2" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q3 — Plusieurs comptes TikTok -->
+    <div class="step" id="step3">
+      <div class="step-label">Question 3 / 9</div>
+      <div class="question">Tu as plusieurs comptes TikTok ?</div>
+      <div class="options">
+        <div class="opt" data-q="3" data-v="oui_multi" data-score="2" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Oui, plusieurs comptes actifs
+        </div>
+        <div class="opt" data-q="3" data-v="non_un" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Non, un seul compte
+        </div>
+        <div class="opt" data-q="3" data-v="non" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Pas de compte TikTok
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(3)" id="btn3" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q4 — Accès lives TikTok -->
+    <div class="step" id="step4">
+      <div class="step-label">Question 4 / 9</div>
+      <div class="question">Tu as accès aux lives sur TikTok ?</div>
+      <div class="options">
+        <div class="opt" data-q="4" data-v="oui" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Oui, je peux lancer un live TikTok
+        </div>
+        <div class="opt" data-q="4" data-v="non" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Non, je n'ai pas encore accès
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(4)" id="btn4" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q5 — Live tous les jours -->
+    <div class="step" id="step5">
+      <div class="step-label">Question 5 / 9</div>
+      <div class="question">Tu peux faire des lives TikTok tous les jours ?</div>
+      <div class="options">
+        <div class="opt" data-q="5" data-v="oui_tous" data-score="4" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Oui, tous les jours sans problème
+        </div>
+        <div class="opt" data-q="5" data-v="presque" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Presque — 5 à 6 jours par semaine
+        </div>
+        <div class="opt" data-q="5" data-v="quelques" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>3 à 4 jours par semaine
+        </div>
+        <div class="opt" data-q="5" data-v="peu" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>1 à 2 jours par semaine ou moins
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(5)" id="btn5" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q6 — Durée par live -->
+    <div class="step" id="step6">
+      <div class="step-label">Question 6 / 9</div>
+      <div class="question">Combien de temps par live tu peux tenir ?</div>
+      <div class="options">
+        <div class="opt" data-q="6" data-v="2h+" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>2h ou plus
+        </div>
+        <div class="opt" data-q="6" data-v="1-2h" data-score="2" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Entre 1h et 2h
+        </div>
+        <div class="opt" data-q="6" data-v="30-60" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Entre 30 et 60 min
+        </div>
+        <div class="opt" data-q="6" data-v="<30" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Moins de 30 min
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(6)" id="btn6" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q7 — Objectif argent -->
+    <div class="step" id="step7">
+      <div class="step-label">Question 7 / 9</div>
+      <div class="question">C'est quoi ton objectif financier par mois avec les lives ?</div>
+      <div class="options">
+        <div class="opt" data-q="7" data-v="5k+" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>5 000 € ou plus
+        </div>
+        <div class="opt" data-q="7" data-v="2-5k" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Entre 2 000 € et 5 000 €
+        </div>
+        <div class="opt" data-q="7" data-v="1-2k" data-score="2" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Entre 1 000 € et 2 000 €
+        </div>
+        <div class="opt" data-q="7" data-v="<1k" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Moins de 1 000 € — juste un complément
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(7)" id="btn7" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q8 — Sérieux -->
+    <div class="step" id="step8">
+      <div class="step-label">Question 8 / 9</div>
+      <div class="question">Quand tu commences quelque chose, tu vas jusqu'au bout ?</div>
+      <div class="options">
+        <div class="opt" data-q="8" data-v="toujours" data-score="3" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Toujours — je lâche jamais ce que j'entreprends
+        </div>
+        <div class="opt" data-q="8" data-v="souvent" data-score="2" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Souvent, mais ça m'arrive de décrocher
+        </div>
+        <div class="opt" data-q="8" data-v="depond" data-score="1" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Ça dépend de la motivation du moment
+        </div>
+        <div class="opt" data-q="8" data-v="non" data-score="0" onclick="selectOpt(this)">
+          <div class="opt-dot"></div>Honnêtement, j'ai du mal à tenir sur la durée
+        </div>
+      </div>
+      <button class="btn" onclick="nextStep(8)" id="btn8" disabled>CONTINUER</button>
+    </div>
+
+    <!-- Q9 — Texte libre -->
+    <div class="step" id="step9">
+      <div class="step-label">Question 9 / 9</div>
+      <div class="question">Tu veux rajouter quelque chose ?</div>
+      <textarea class="free-text" id="freeText" placeholder="Parle-nous de toi, de ta motivation, d'une expérience… ou laisse vide si t'as rien à rajouter."></textarea>
+      <div class="free-hint">Facultatif — mais c'est souvent ce qui fait la différence.</div>
+      <button class="btn" onclick="nextStep(9)" id="btn9">CONTINUER</button>
+    </div>
+
+    <!-- Coordonnées -->
+    <div class="step" id="step10">
+      <div class="step-label">Tes coordonnées</div>
+      <div class="question">Dernière étape — On a besoin de te contacter</div>
+      <div class="fields">
+        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+          <div class="field-group" style="flex:1;min-width:130px;">
+            <label>Prénom</label>
+            <input type="text" id="prenom" placeholder="Ton prénom" />
+          </div>
+          <div class="field-group" style="flex:1;min-width:130px;">
+            <label>Nom</label>
+            <input type="text" id="nom" placeholder="Ton nom" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Numéro de téléphone</label>
+          <input type="tel" id="phone" placeholder="+33 6 00 00 00 00" />
+        </div>
+        <div class="field-group">
+          <label>Adresse e-mail</label>
+          <input type="email" id="email" placeholder="ton@email.com" />
+        </div>
+        <div id="fieldsError" class="error-msg">Merci de remplir tous les champs correctement.</div>
+      </div>
+      <button class="btn" onclick="submitForm()">ENVOYER MA CANDIDATURE</button>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div id="confirm">
+      <div class="confirm-icon">✓</div>
+      <div class="confirm-title">Candidature envoyée</div>
+      <div class="confirm-line"></div>
+      <div class="confirm-msg" id="confirmMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const answers = {};
+  const TOTAL_Q = 9;
+
+  function showAge() {
+    document.getElementById('ageWrap').classList.add('visible');
+  }
+  function hideAge() {
+    document.getElementById('ageWrap').classList.remove('visible');
+    document.getElementById('ageInput').value = '';
+  }
+
+  function selectOpt(el) {
+    const q = el.dataset.q;
+    // Une seule réponse possible par question
+    document.querySelectorAll('[data-q="' + q + '"]').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[q] = { v: el.dataset.v, score: parseInt(el.dataset.score) };
+    document.getElementById('btn' + q).disabled = false;
+  }
+
+  function nextStep(current) {
+    document.getElementById('step' + current).classList.remove('active');
+    const next = current + 1;
+    document.getElementById('step' + next).classList.add('active');
+    updateProgress(next);
+  }
+
+  function updateProgress(step) {
+    const pct = (step / (TOTAL_Q + 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function submitForm() {
+    const prenom = document.getElementById('prenom').value.trim();
+    const nom = document.getElementById('nom').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const freeText = document.getElementById('freeText').value.trim();
+    const ageInput = document.getElementById('ageInput').value.trim();
+    const err = document.getElementById('fieldsError');
+
+    if (!prenom || !nom || !phone || !email || !email.includes('@')) {
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+
+    const totalScore = Object.values(answers).reduce((s, a) => s + (a.score || 0), 0);
+    const lead = totalScore >= 14 ? '🔥 CHAUD' : totalScore >= 8 ? '🟡 MID' : '🧊 FROID';
+
+    const majeur = answers['1'] && answers['1'].v === 'oui';
+    const majoriteStr = majeur ? '✅ Oui (18+)' : ('❌ Mineur' + (ageInput ? ' — ' + ageInput + ' ans' : ''));
+
+    const labelMap = {
+      '2': { q: 'Compte TikTok', vals: { oui_1000: '✅ 1 000+ abonnés', oui_moins: '⚠️ Moins de 1 000', non: '❌ Non' } },
+      '3': { q: 'Plusieurs comptes TikTok', vals: { oui_multi: '✅ Plusieurs comptes', non_un: 'Un seul compte', non: '❌ Non' } },
+      '4': { q: 'Accès lives TikTok', vals: { oui: '✅ Oui', non: '❌ Non' } },
+      '5': { q: 'Lives tous les jours ?', vals: { oui_tous: '✅ Tous les jours', presque: '5-6j/semaine', quelques: '3-4j/semaine', peu: '1-2j ou moins' } },
+      '6': { q: 'Durée par live', vals: { '2h+': '2h ou +', '1-2h': '1h - 2h', '30-60': '30 - 60 min', '<30': '< 30 min' } },
+      '7': { q: 'Objectif mensuel', vals: { '5k+': '5 000€ ou +', '2-5k': '2 000 - 5 000€', '1-2k': '1 000 - 2 000€', '<1k': '< 1 000€' } },
+      '8': { q: 'Sérieux / constance', vals: { toujours: '✅ Toujours au bout', souvent: 'Souvent', depond: 'Ça dépend', non: '❌ Difficile de tenir' } },
+    };
+
+    let fields = [
+      { name: '🎂 Majeur(e) ?', value: majoriteStr, inline: true },
+    ];
+
+    for (const [k, meta] of Object.entries(labelMap)) {
+      const ans = answers[k];
+      if (ans) fields.push({ name: meta.q, value: meta.vals[ans.v] || ans.v, inline: true });
+    }
+
+    if (freeText) fields.push({ name: '💬 Message libre', value: freeText, inline: false });
+
+    const payload = {
+      embeds: [{
+        title: '🔴 Nouvelle candidature — CAS\'INDUSTRIES',
+        color: 0xff3c00,
+        fields: [
+          { name: '👤 Nom', value: prenom + ' ' + nom, inline: true },
+          { name: '📱 Téléphone', value: phone, inline: true },
+          { name: '📧 Email', value: email, inline: true },
+          ...fields,
+          { name: '🌡️ Lead', value: lead, inline: true },
+        ],
+        footer: { text: 'CAS\'INDUSTRIES — Formulaire de qualification' },
+        timestamp: new Date().toISOString()
+      }]
+    };
+
+    fetch('https://discord.com/api/webhooks/1509843597560643696/EnKRCNZgWCITIdncZM5fdk53aP1UPtvoVaqpX9fX9ayvEI17AK5qOKJ-dgU5bce1guWe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(e => console.error('Webhook error:', e));
+
+    document.getElementById('step10').classList.remove('active');
+    document.getElementById('confirm').style.display = 'block';
+    document.getElementById('progressBar').style.width = '100%';
+    document.getElementById('confirmMsg').textContent =
+      'Merci ' + prenom + ', on a bien reçu ta candidature. On reviendra vers toi prochainement.';
+  }
+</script>
+</body>
+</html>
